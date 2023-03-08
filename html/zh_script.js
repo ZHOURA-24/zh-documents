@@ -5,19 +5,18 @@ var toggleShow = false;
 var activeform = {};
 var id_count = 0;
 
-function InputElement(_label, _type, _value, _can_be_empty, _can_be_edited)
-{
-	this.label 			= _label;
-	this.type 			= _type;
-	this.value 			= _value;
-	this.can_be_empty	= _can_be_empty;
-	this.can_be_edited 	= _can_be_edited;
+function InputElement(_label, _type, _value, _can_be_empty, _can_be_edited) {
+	this.label = _label;
+	this.type = _type;
+	this.value = _value;
+	this.can_be_empty = _can_be_empty;
+	this.can_be_edited = _can_be_edited;
 
 	let _id = "_m" + String(id_count);
 	id_count++;
-	this.elementid 		= _id;
-	
-	this.getHTML 	= function(_editable) {
+	this.elementid = _id;
+
+	this.getHTML = function (_editable) {
 
 		let _html = "<div class=\"submit_input\">";
 		if (this.type == "textarea") _html = "<div class=\"submit_text_area\">";
@@ -37,86 +36,82 @@ function InputElement(_label, _type, _value, _can_be_empty, _can_be_edited)
 	}
 }
 
-function Form (_title, _subtitle, _elements, _submittable)
-{
-	this.headerTitle 		= _title,
-	this.headerSubtitle 	= _subtitle,
-	this.headerFirstName	= "",
-	this.headerLastName		= "",
-	this.headerDateOfBirth	= "",
-	this.headerJobLabel 	= "",
-	this.headerJobGrade 	= "",
-	this.elements 			= _elements,
-	this.signed				= false,
-	this.submittable 		= _submittable || false;
-	this.headerDateCreated 	= "",
+function Form(_title, _subtitle, _elements, _submittable) {
+	this.headerTitle = _title,
+		this.headerSubtitle = _subtitle,
+		this.headerFirstName = "",
+		this.headerLastName = "",
+		this.headerDateOfBirth = "",
+		this.headerJobLabel = "",
+		this.headerJobGrade = "",
+		this.elements = _elements,
+		this.signed = false,
+		this.submittable = _submittable || false;
+	this.headerDateCreated = "",
 
-	this.loadFromJson = function(obj) {
+		this.loadFromJson = function (obj) {
 
-		this.headerTitle = obj.headerTitle;
-		this.headerSubtitle = obj.headerSubtitle;
-		this.headerFirstName = obj.headerFirstName;
-		this.headerLastName = obj.headerLastName;
-		this.headerDateOfBirth = obj.headerDateOfBirth;
-		this.headerSubtitle = obj.headerSubtitle;
-		this.headerJobLabel = obj.headerJobLabel;
-		this.headerJobGrade = obj.headerJobGrade;
-		
-		let tmp_elements = []
-		for (let i=0; i<obj.elements.length; i++)
-		{
-			let tmpIE = new InputElement(obj.elements[i].label, obj.elements[i].type, obj.elements[i].value, obj.elements[i].can_be_empty, obj.elements[i].can_be_edited)
-			tmp_elements.push(tmpIE);
+			this.headerTitle = obj.headerTitle;
+			this.headerSubtitle = obj.headerSubtitle;
+			this.headerFirstName = obj.headerFirstName;
+			this.headerLastName = obj.headerLastName;
+			this.headerDateOfBirth = obj.headerDateOfBirth;
+			this.headerSubtitle = obj.headerSubtitle;
+			this.headerJobLabel = obj.headerJobLabel;
+			this.headerJobGrade = obj.headerJobGrade;
+
+			let tmp_elements = []
+			for (let i = 0; i < obj.elements.length; i++) {
+				let tmpIE = new InputElement(obj.elements[i].label, obj.elements[i].type, obj.elements[i].value, obj.elements[i].can_be_empty, obj.elements[i].can_be_edited)
+				tmp_elements.push(tmpIE);
+			}
+			this.elements = tmp_elements;
+
+			this.signed = obj.signed;
 		}
-		this.elements = tmp_elements;
-
-		this.signed = obj.signed;
-	}
 
 	this.sign = function () {
 		this.signed = true;
 		$("#signature_block").addClass("signature_block_signed");
 		$("#signature_block").html(activeform.headerFirstName + " " + activeform.headerLastName + "<br>" + this.headerJobLabel + " - " + this.headerJobGrade + "<br>" + getCreationDate());
 	}
-	this.submit = function() { 
+	this.submit = function () {
 
 		activeform.headerDateCreated = getCreationDate();
 
 		let can_submit = true;
 
-		for (let i=0; i<activeform.elements.length; i++)
-		{	
-			
+		for (let i = 0; i < activeform.elements.length; i++) {
+
 			let _element = activeform.elements[i];
-			if (!_element.can_be_empty && ( $("#" + _element.elementid).val() == "" || $("#" + _element.elementid).val() == " "))
-			{
+			if (!_element.can_be_empty && ($("#" + _element.elementid).val() == "" || $("#" + _element.elementid).val() == " ")) {
 				can_submit = false;
 				$("#" + _element.elementid).addClass("must_fill");
 				//console.log("Element: " + _element)
 			}
-			
+
 
 			activeform.elements[i].value = String($("#" + activeform.elements[i].elementid).val());
 		}
 
 		var json_string = JSON.stringify(activeform);
-		
+
 		if (can_submit) {
 			$.post('http://zh-documents/form_submit', json_string);
 			activeform.close();
 		}
-		
+
 	}
 
-	this.load = function() {}
-	
-	this.givecopy = function () {}
+	this.load = function () { }
 
-	this.print = function () { 
+	this.givecopy = function () { }
+
+	this.print = function () {
 
 		/* Create Header */
 
-		html_header  = "<div id=\"section_header\">";
+		html_header = "<div id=\"section_header\">";
 		html_header += "<div id=\"button_close\">X</div>";
 		html_header += "<div id=\"header_title\">" + this.headerTitle + "</div>";
 		html_header += "<div id=\"header_seal\"></div>";
@@ -146,11 +141,10 @@ function Form (_title, _subtitle, _elements, _submittable)
 		/* Create main body */
 
 		$("#main_container").append("<div id=\"section_input\"></div>");
-		
+
 		let count = 0;
 
-		for (let i=0; i<this.elements.length; i++)
-		{
+		for (let i = 0; i < this.elements.length; i++) {
 			$("#main_container").append(this.elements[i].getHTML());
 			if (this.elements[i].type == "textarea") count++;
 			if (this.elements[i].can_be_edited == false) $("#" + this.elements[i].elementid).prop('readonly', true);
@@ -162,14 +156,13 @@ function Form (_title, _subtitle, _elements, _submittable)
 		html_footer = "<div id=\"section_footer_block\">" + _U["terms_and_signing"] + "</div>";
 		html_footer += "<div id=\"section_footer\">";
 		html_footer += "<div id=\"sign_terms_block\">";
-	
+
 		html_footer += "<ul>";
-		for (let i=0; i<_U["sign_terms"].length; i++)
-		{
+		for (let i = 0; i < _U["sign_terms"].length; i++) {
 			html_footer += "<li>" + _U["sign_terms"][i] + "</li>";
 		}
 		html_footer += "</ul>";
-		
+
 		html_footer += "</div>";
 		html_footer += "<div id=\"signature_block\">Click to sign.</div>";
 
@@ -194,9 +187,9 @@ function Form (_title, _subtitle, _elements, _submittable)
 		if (this.signed) this.sign();
 	}
 
-	this.close = function() {
+	this.close = function () {
 		$("#main_container").html("");
-		$("#main_container").css({display: 'none'});
+		$("#main_container").css({ display: 'none' });
 		$.post('http://zh-documents/form_close', JSON.stringify({}));
 	}
 }
@@ -204,69 +197,68 @@ function Form (_title, _subtitle, _elements, _submittable)
 
 
 
-$(document).keyup(function(e) {
+$(document).keyup(function (e) {
 	if (e.keyCode === 27) activeform.close();
 });
 
 
-window.addEventListener('message', function(event){
-   	var edata = event.data;
-   	if (edata.type == "ShowDocument") {
+window.addEventListener('message', function (event) {
+	var edata = event.data;
+	if (edata.type == "ShowDocument") {
 
-   		activeform = new Form();
-   		activeform.loadFromJson(edata.data);
-   		activeform.submittable = false;
+		activeform = new Form();
+		activeform.loadFromJson(edata.data);
+		activeform.submittable = false;
 
-   		if (edata.data.locale == undefined) edata.data.locale = "zh";
- 
-   		$.getScript("language_" + edata.data.locale + ".js", function(data, textStatus){
-   			try {
-        		activeform.print();
-        		console.log("we loaded" + "language_" + edata.data.locale + ".js");
-        		$("#main_container").css({
-   					display: 'block'
-   				});
-    		} catch(e) {
-        		console.log("Error loading language: " + e);
-    		}
+		if (edata.data.locale == undefined) edata.data.locale = "zh";
+
+		$.getScript("language_" + edata.data.locale + ".js", function (data, textStatus) {
+			try {
+				activeform.print();
+				console.log("we loaded" + "language_" + edata.data.locale + ".js");
+				$("#main_container").css({
+					display: 'block'
+				});
+			} catch (e) {
+				console.log("Error loading language: " + e);
+			}
 		});
-   	}
+	}
 
-   	if (edata.type == "createNewForm") {
-   		activeform = new Form();
-   		activeform.loadFromJson(edata.data);
-   		activeform.submittable = true;
+	if (edata.type == "createNewForm") {
+		activeform = new Form();
+		activeform.loadFromJson(edata.data);
+		activeform.submittable = true;
 
-   		$.getScript("language_" + edata.data.locale + ".js", function(data, textStatus){
-   			try {
-        		activeform.print();
-        		console.log("we loaded" + "language_" + edata.data.locale + ".js");
-        		$("#main_container").css({
-   					display: 'block'
-   				});
-    		} catch(e) {
-        		console.log("Error loading language: " + e);
-    		}
+		$.getScript("language_" + edata.data.locale + ".js", function (data, textStatus) {
+			try {
+				activeform.print();
+				console.log("we loaded" + "language_" + edata.data.locale + ".js");
+				$("#main_container").css({
+					display: 'block'
+				});
+			} catch (e) {
+				console.log("Error loading language: " + e);
+			}
 		});
 
-   	}
+	}
 
 });
 
 
-function getCreationDate()
-{
+function getCreationDate() {
 	let d = new Date();
 
-	let month = d.getMonth()+1;
+	let month = d.getMonth() + 1;
 	let day = d.getDate();
 	let hours = d.getHours();
 	let minutes = d.getMinutes();
 	let seconds = d.getSeconds();
 
-	let output = ((''+day).length<2 ? '0' : '') + day + '/' + ((''+month).length<2 ? '0' : '') + month + '/' + d.getFullYear() + " " + hours + ":" + minutes + ":" + seconds;
+	let output = (('' + day).length < 2 ? '0' : '') + day + '/' + (('' + month).length < 2 ? '0' : '') + month + '/' + d.getFullYear() + " " + hours + ":" + minutes + ":" + seconds;
 
-   	return output
+	return output
 }
 
 

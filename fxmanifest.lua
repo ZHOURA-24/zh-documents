@@ -26,5 +26,8 @@ client_scripts {
 	'client/client.lua',
 }
 
-lua54 'yes'
+shared_script {
+	'@ox_lib/init.lua'
+}
 
+lua54 'yes'
